@@ -16,7 +16,9 @@
     "typecheck": "tsc --project tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@actions/core": "^1.11.1",
+    "@actions/core": "^2.0.3",
+    "@actions/github": "8.0.1",
+    "@octokit/graphql": "7.1.1",
     "lodash": "^4.17.21",
     "zod": "^4.1.12"
   },

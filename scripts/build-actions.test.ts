@@ -30,7 +30,9 @@ describe('getActionDirs', () => {
       '/repo/scripts/action.yml': '',
     });
 
-    expect(getActionDirs(rootDir)).toEqual([path.join(rootDir, 'alpha')]);
+    expect(getActionDirs(rootDir).sort()).toEqual(
+      [path.join(rootDir, 'alpha'), path.join(rootDir, 'project-assigner')].sort(),
+    );
   });
 });
 
@@ -75,6 +77,26 @@ describe('runBuildActions', () => {
     expect(vol.existsSync(path.join(actionDir, 'dist', 'index.js'))).toBe(true);
   });
 
+  it('builds project-assigner from index.js', () => {
+    const log = vi.fn();
+    let capturedArgs: string[] = [];
+    const spawn = vi.fn((_command: string, args: string[]) => {
+      capturedArgs = args;
+      return { status: 0 };
+    });
+
+    seedFs({
+      '/repo/node_modules/@vercel/ncc/dist/ncc/index.js': '',
+      '/repo/project-assigner/action.yml': '',
+      '/repo/project-assigner/index.js': 'module.exports = {};',
+    });
+
+    expect(runBuildActions({ rootDir, log, spawn })).toBe(0);
+    expect(log).toHaveBeenCalledWith('Building project-assigner');
+    expect(spawn).toHaveBeenCalledOnce();
+    expect(capturedArgs).toContain('index.js');
+  });
+
   it('fails when an action is missing src/index.ts', () => {
     const error = vi.fn();
 
@@ -85,5 +107,17 @@ describe('runBuildActions', () => {
 
     expect(runBuildActions({ rootDir, error })).toBe(1);
     expect(error).toHaveBeenCalledWith('my-action is missing src/index.ts.');
+  });
+
+  it('fails when project-assigner is missing index.js', () => {
+    const error = vi.fn();
+
+    seedFs({
+      '/repo/node_modules/@vercel/ncc/dist/ncc/index.js': '',
+      '/repo/project-assigner/action.yml': '',
+    });
+
+    expect(runBuildActions({ rootDir, error })).toBe(1);
+    expect(error).toHaveBeenCalledWith('project-assigner is missing index.js.');
   });
 });

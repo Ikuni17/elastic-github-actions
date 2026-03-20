@@ -2,13 +2,9 @@ name: Build
 
 on:
   pull_request:
-    paths-ignore:
-      - 'project-assigner/**'
   push:
     branches:
       - master
-    paths-ignore:
-      - 'project-assigner/**'
   workflow_call:
     inputs:
       ref:

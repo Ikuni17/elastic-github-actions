@@ -1,5 +1,10 @@
-const ProjectAssigner = require('../project-assigner');
-let projectAssigner;
+import { createRequire } from 'node:module';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const require = createRequire(import.meta.url);
+const ProjectAssigner = require('./project-assigner.js');
+
+let projectAssigner: any;
 
 const mockIssuesContext = {
   owner: 'mocked_owner',
@@ -25,20 +30,19 @@ const mockPRsContext = {
 
 describe("projectAssigner", () => {
   beforeEach(() => {
-    jest.resetModules();
     projectAssigner = new ProjectAssigner();
   });
 
   describe("handleLabeled", () => {
     it("creates a project card when a specific label is added to an issue", async () => {
 
-      const mockFindProjectCardId = jest.fn().mockResolvedValueOnce(null);
-      const mockFindColumnIdForColumnName = jest.fn().mockResolvedValueOnce('mocked_column_id');
-      const mockCreateCard = jest.fn().mockResolvedValueOnce('');
+      const mockFindProjectCardId = vi.fn().mockResolvedValueOnce(null);
+      const mockFindColumnIdForColumnName = vi.fn().mockResolvedValueOnce('mocked_column_id');
+      const mockCreateCard = vi.fn().mockResolvedValueOnce('');
 
-      jest.spyOn(projectAssigner, 'findProjectCardId').mockImplementation(mockFindProjectCardId);
-      jest.spyOn(projectAssigner, 'findColumnIdForColumnName').mockImplementation(mockFindColumnIdForColumnName);
-      jest.spyOn(projectAssigner, 'createCard').mockImplementation(mockCreateCard);
+      vi.spyOn(projectAssigner, 'findProjectCardId').mockImplementation(mockFindProjectCardId);
+      vi.spyOn(projectAssigner, 'findColumnIdForColumnName').mockImplementation(mockFindColumnIdForColumnName);
+      vi.spyOn(projectAssigner, 'createCard').mockImplementation(mockCreateCard);
 
       const octokit = {};
       const projectNumber = 17;
@@ -54,13 +58,13 @@ describe("projectAssigner", () => {
 
     it("does not create a project card when a card already exists for the issue", async () => {
 
-      const mockFindProjectCardId = jest.fn().mockResolvedValueOnce('mocked_project_card_id');
-      const mockFindColumnIdForColumnName = jest.fn().mockResolvedValueOnce('mocked_column_id');
-      const mockCreateCard = jest.fn().mockResolvedValueOnce('');
+      const mockFindProjectCardId = vi.fn().mockResolvedValueOnce('mocked_project_card_id');
+      const mockFindColumnIdForColumnName = vi.fn().mockResolvedValueOnce('mocked_column_id');
+      const mockCreateCard = vi.fn().mockResolvedValueOnce('');
 
-      jest.spyOn(projectAssigner, 'findProjectCardId').mockImplementation(mockFindProjectCardId);
-      jest.spyOn(projectAssigner, 'findColumnIdForColumnName').mockImplementation(mockFindColumnIdForColumnName);
-      jest.spyOn(projectAssigner, 'createCard').mockImplementation(mockCreateCard);
+      vi.spyOn(projectAssigner, 'findProjectCardId').mockImplementation(mockFindProjectCardId);
+      vi.spyOn(projectAssigner, 'findColumnIdForColumnName').mockImplementation(mockFindColumnIdForColumnName);
+      vi.spyOn(projectAssigner, 'createCard').mockImplementation(mockCreateCard);
 
       const octokit = {};
       const projectNumber = 17;
@@ -74,13 +78,13 @@ describe("projectAssigner", () => {
 
     it("does not create a project card when the label doesn't match", async () => {
 
-      const mockFindProjectCardId = jest.fn().mockResolvedValueOnce('mocked_project_card_id');
-      const mockFindColumnIdForColumnName = jest.fn().mockResolvedValueOnce('mocked_column_id');
-      const mockCreateCard = jest.fn().mockResolvedValueOnce('');
+      const mockFindProjectCardId = vi.fn().mockResolvedValueOnce('mocked_project_card_id');
+      const mockFindColumnIdForColumnName = vi.fn().mockResolvedValueOnce('mocked_column_id');
+      const mockCreateCard = vi.fn().mockResolvedValueOnce('');
 
-      jest.spyOn(projectAssigner, 'findProjectCardId').mockImplementation(mockFindProjectCardId);
-      jest.spyOn(projectAssigner, 'findColumnIdForColumnName').mockImplementation(mockFindColumnIdForColumnName);
-      jest.spyOn(projectAssigner, 'createCard').mockImplementation(mockCreateCard);
+      vi.spyOn(projectAssigner, 'findProjectCardId').mockImplementation(mockFindProjectCardId);
+      vi.spyOn(projectAssigner, 'findColumnIdForColumnName').mockImplementation(mockFindColumnIdForColumnName);
+      vi.spyOn(projectAssigner, 'createCard').mockImplementation(mockCreateCard);
 
       const octokit = {};
       const projectNumber = 17;
@@ -109,7 +113,7 @@ describe("projectAssigner", () => {
 
   describe("handleUnlabeled", () => {
     it("removes a project card when a specific label is removed from an issue", async () => {
-      const mockFindProjectCardsForPayloadItem = jest.fn().mockResolvedValueOnce([
+      const mockFindProjectCardsForPayloadItem = vi.fn().mockResolvedValueOnce([
         {
           "node": {
             "project": {
@@ -119,9 +123,9 @@ describe("projectAssigner", () => {
           }
         }
       ]);
-      const mockRemoveCard = jest.fn().mockResolvedValueOnce('');
-      jest.spyOn(projectAssigner, 'findProjectCardsForPayloadItem').mockImplementation(mockFindProjectCardsForPayloadItem);
-      jest.spyOn(projectAssigner, 'removeCard').mockImplementation(mockRemoveCard);
+      const mockRemoveCard = vi.fn().mockResolvedValueOnce('');
+      vi.spyOn(projectAssigner, 'findProjectCardsForPayloadItem').mockImplementation(mockFindProjectCardsForPayloadItem);
+      vi.spyOn(projectAssigner, 'removeCard').mockImplementation(mockRemoveCard);
 
       const octokit = {};
       const projectNumber = 17;
@@ -134,7 +138,7 @@ describe("projectAssigner", () => {
     });
 
     it("does not remove a project card when the issue's project number doesn't match", async () => {
-      const mockFindProjectCardsForPayloadItem = jest.fn().mockResolvedValueOnce([
+      const mockFindProjectCardsForPayloadItem = vi.fn().mockResolvedValueOnce([
         {
           "node": {
             "project": {
@@ -144,9 +148,9 @@ describe("projectAssigner", () => {
           }
         }
       ]);
-      const mockRemoveCard = jest.fn().mockResolvedValueOnce('');
-      jest.spyOn(projectAssigner, 'findProjectCardsForPayloadItem').mockImplementation(mockFindProjectCardsForPayloadItem);
-      jest.spyOn(projectAssigner, 'removeCard').mockImplementation(mockRemoveCard);
+      const mockRemoveCard = vi.fn().mockResolvedValueOnce('');
+      vi.spyOn(projectAssigner, 'findProjectCardsForPayloadItem').mockImplementation(mockFindProjectCardsForPayloadItem);
+      vi.spyOn(projectAssigner, 'removeCard').mockImplementation(mockRemoveCard);
 
       const octokit = {};
       const projectNumber = 17; // 17 should not match 404
@@ -158,10 +162,10 @@ describe("projectAssigner", () => {
     });
 
     it("does not remove a project card when a card does not exist for the issue", async () => {
-      const mockFindProjectCardsForPayloadItem = jest.fn().mockResolvedValueOnce(null);
-      const mockRemoveCard = jest.fn().mockResolvedValueOnce('');
-      jest.spyOn(projectAssigner, 'findProjectCardsForPayloadItem').mockImplementation(mockFindProjectCardsForPayloadItem);
-      jest.spyOn(projectAssigner, 'removeCard').mockImplementation(mockRemoveCard);
+      const mockFindProjectCardsForPayloadItem = vi.fn().mockResolvedValueOnce(null);
+      const mockRemoveCard = vi.fn().mockResolvedValueOnce('');
+      vi.spyOn(projectAssigner, 'findProjectCardsForPayloadItem').mockImplementation(mockFindProjectCardsForPayloadItem);
+      vi.spyOn(projectAssigner, 'removeCard').mockImplementation(mockRemoveCard);
 
       const octokit = {};
       const projectNumber = 17;
@@ -173,10 +177,10 @@ describe("projectAssigner", () => {
     });
 
     it("does not remove a project card when the label doesn't match", async () => {
-      const mockFindProjectCardsForPayloadItem = jest.fn().mockResolvedValueOnce(null);
-      const mockRemoveCard = jest.fn().mockResolvedValueOnce('');
-      jest.spyOn(projectAssigner, 'findProjectCardsForPayloadItem').mockImplementation(mockFindProjectCardsForPayloadItem);
-      jest.spyOn(projectAssigner, 'removeCard').mockImplementation(mockRemoveCard);
+      const mockFindProjectCardsForPayloadItem = vi.fn().mockResolvedValueOnce(null);
+      const mockRemoveCard = vi.fn().mockResolvedValueOnce('');
+      vi.spyOn(projectAssigner, 'findProjectCardsForPayloadItem').mockImplementation(mockFindProjectCardsForPayloadItem);
+      vi.spyOn(projectAssigner, 'removeCard').mockImplementation(mockRemoveCard);
 
       const octokit = {};
       const projectNumber = 17;
@@ -278,7 +282,7 @@ describe("projectAssigner", () => {
           "deletedCardId": "MDExOlByb2plY3RDYXJkNTkyNjkyNzk="
         }
       }`);
-      const mOctokit = jest.fn().mockResolvedValueOnce(mockRemoveCardMutationResponse);
+      const mOctokit = vi.fn().mockResolvedValueOnce(mockRemoveCardMutationResponse);
       const cardId = 'MDExOlByb2plY3RDYXJkNTkyNjkyNzk=';
       await projectAssigner.removeCard(mOctokit, cardId);
       expect(mOctokit.mock.calls.length).toBe(1);
@@ -313,7 +317,7 @@ describe("projectAssigner", () => {
         ]
       */
       // Octokit throws the error, so our code is not responsible for parsing that raw GraphQL response.
-      const mOctokit = jest.fn().mockRejectedValueOnce(new Error("Could not resolve to a node with the global id of 'pancakes'."));
+      const mOctokit = vi.fn().mockRejectedValueOnce(new Error("Could not resolve to a node with the global id of 'pancakes'."));
       const cardId = 'pancakes';
       await expect(projectAssigner.removeCard(mOctokit, cardId)).rejects.toThrow();
       expect(mOctokit.mock.calls.length).toBe(1);
@@ -347,7 +351,7 @@ describe("projectAssigner", () => {
           }
         }
       }`);
-      const mOctokit = jest.fn().mockResolvedValueOnce(mockProjectCardsResponse);
+      const mOctokit = vi.fn().mockResolvedValueOnce(mockProjectCardsResponse);
       const projectCards = await projectAssigner.findProjectCardsForPayloadItem(mOctokit, mockIssuesContext);
       expect(projectCards.length).toBe(1);
       expect(projectCards[0].node.id).toBe('MDExOlByb2plY3RDYXJkNTc5MzQxMzE=');
@@ -390,7 +394,7 @@ describe("projectAssigner", () => {
           }
         }
       }`);
-      const mOctokit = jest.fn().mockResolvedValueOnce(mockProjectCardsResponse);
+      const mOctokit = vi.fn().mockResolvedValueOnce(mockProjectCardsResponse);
       const projectCards = await projectAssigner.findProjectCardsForPayloadItem(mOctokit, mockPRsContext);
       expect(projectCards.length).toBe(1);
       expect(projectCards[0].node.id).toBe('MDExOlByb2plY3RDYXJkNTkyNjkyNzk=');
@@ -424,7 +428,7 @@ describe("projectAssigner", () => {
           }
         }
       }`);
-      const mOctokit = jest.fn().mockResolvedValueOnce(mockProjectCardsResponse);
+      const mOctokit = vi.fn().mockResolvedValueOnce(mockProjectCardsResponse);
       const projectCards = await projectAssigner.findProjectCardsForPayloadItem(mOctokit, mockIssuesContext);
       expect(projectCards.length).toBe(0);
     });
@@ -457,7 +461,7 @@ describe("projectAssigner", () => {
       }
       */
       // Octokit throws the error, so our code is not responsible for parsing that raw GraphQL response.
-      const mOctokit = jest.fn().mockRejectedValueOnce(new Error("Could not resolve to an Issue with the number of 404."))
+      const mOctokit = vi.fn().mockRejectedValueOnce(new Error("Could not resolve to an Issue with the number of 404."))
       await expect(projectAssigner.findProjectCardsForPayloadItem(mOctokit, mockIssuesContext)).rejects.toThrow();
     });
   });
@@ -473,7 +477,7 @@ describe("projectAssigner", () => {
           }
         }
       }`);
-      const mOctokit = jest.fn().mockResolvedValueOnce(mockCardMutationResponse);
+      const mOctokit = vi.fn().mockResolvedValueOnce(mockCardMutationResponse);
       const projectColumnId = 'PC_lQDOA7oDiM4VBNFezgC6epXOANPw0Q';
       const contentId = 'mocked_issue_node_id';
       await projectAssigner.createCard(mOctokit, projectColumnId, contentId);
@@ -514,7 +518,7 @@ describe("projectAssigner", () => {
         ]
       }*/
       // Octokit throws the error, so our code is not responsible for parsing that raw GraphQL response.
-      const mOctokit = jest.fn().mockRejectedValueOnce(new Error("Could not resolve to ProjectCardItem node with the global id of 'pancakes'."));
+      const mOctokit = vi.fn().mockRejectedValueOnce(new Error("Could not resolve to ProjectCardItem node with the global id of 'pancakes'."));
       const projectColumnId = 'PC_lQDOA7oDiM4VBNFezgC6epXOANPw0Q';
       const contentId = 'pancakes';
       await expect(projectAssigner.createCard(mOctokit, projectColumnId, contentId)).rejects.toThrow();
@@ -592,7 +596,7 @@ describe("projectAssigner", () => {
     describe("find columns in projects with different projectScope", () => {
       it("finds a column in a repo project", async () => {
         const projectScope = "repo";
-        const mOctokit = jest.fn().mockResolvedValueOnce(mockColumnQueryResponseForRepoProject);
+        const mOctokit = vi.fn().mockResolvedValueOnce(mockColumnQueryResponseForRepoProject);
         const projectNumber = 17;
         const columnName = "In progress";
         const column = await projectAssigner.findColumnIdForColumnName(mOctokit, projectScope, projectNumber, columnName, mockIssuesContext);
@@ -615,7 +619,7 @@ describe("projectAssigner", () => {
 
       it("finds a column in an organization project", async () => {
         const projectScope = "org";
-        const mOctokit = jest.fn().mockResolvedValueOnce(mockColumnQueryResponseForOrgProject);
+        const mOctokit = vi.fn().mockResolvedValueOnce(mockColumnQueryResponseForOrgProject);
         const projectNumber = 17;
         const columnName = "In progress";
         const column = await projectAssigner.findColumnIdForColumnName(mOctokit, projectScope, projectNumber, columnName, mockIssuesContext);
@@ -638,7 +642,7 @@ describe("projectAssigner", () => {
 
       it("finds a column in a user project", async () => {
         const projectScope = "user";
-        const mOctokit = jest.fn().mockResolvedValueOnce(mockColumnQueryResponseForUserProject);
+        const mOctokit = vi.fn().mockResolvedValueOnce(mockColumnQueryResponseForUserProject);
         const projectNumber = 17;
         const columnName = "In progress";
         const column = await projectAssigner.findColumnIdForColumnName(mOctokit, projectScope, projectNumber, columnName, mockIssuesContext);
@@ -662,7 +666,7 @@ describe("projectAssigner", () => {
 
     describe("failure cases when finding columns", () => {
       it("fails to find a column when given a valid project number and missing column name", async () => {
-        const mOctokit = jest.fn().mockResolvedValueOnce(mockColumnQueryResponseForRepoProject);
+        const mOctokit = vi.fn().mockResolvedValueOnce(mockColumnQueryResponseForRepoProject);
         const projectNumber = 17;
         const projectScope = "repo";
         const columnName = "pancakes";
@@ -676,7 +680,7 @@ describe("projectAssigner", () => {
             "project": null
           }
         }`);
-        const mOctokit = jest.fn().mockResolvedValueOnce(mockColumnQueryNoProjectResponse);
+        const mOctokit = vi.fn().mockResolvedValueOnce(mockColumnQueryNoProjectResponse);
         const projectNumber = 404;
         const projectScope = "repo";
         const columnName = "pancakes";
@@ -730,7 +734,7 @@ describe("projectAssigner", () => {
           }
         }
       }`);
-      const mOctokit = jest.fn().mockResolvedValueOnce(mockColumnQueryResponseForOrgProjectBug);
+      const mOctokit = vi.fn().mockResolvedValueOnce(mockColumnQueryResponseForOrgProjectBug);
       const projectNumber = 17;
       const columnName = "Inbox";
       const column = await projectAssigner.findColumnIdForColumnName(mOctokit, projectScope, projectNumber, columnName, mockIssuesContext);
@@ -772,7 +776,7 @@ describe("projectAssigner", () => {
           }
         }
       }`);
-      const mOctokit = jest.fn().mockResolvedValueOnce(mockIssuesQueryResponse);
+      const mOctokit = vi.fn().mockResolvedValueOnce(mockIssuesQueryResponse);
       const projectNumber = 17;
       const cardId = await projectAssigner.findProjectCardId(mOctokit, projectNumber, mockIssuesContext);
       expect(cardId).toBe('mocked_issue_node_id')
@@ -815,7 +819,7 @@ describe("projectAssigner", () => {
           }
         }
       }`);
-      const mOctokit = jest.fn().mockResolvedValueOnce(mockIssuesQueryResponse);
+      const mOctokit = vi.fn().mockResolvedValueOnce(mockIssuesQueryResponse);
       const projectNumber = 17;
       const cardId = await projectAssigner.findProjectCardId(mOctokit, projectNumber, mockPRsContext);
       expect(cardId).toBe('mocked_issue_node_id')
@@ -858,7 +862,7 @@ describe("projectAssigner", () => {
           }
         }
       }`);
-      const mOctokit = jest.fn().mockResolvedValueOnce(mockIssuesQueryResponse);
+      const mOctokit = vi.fn().mockResolvedValueOnce(mockIssuesQueryResponse);
       const projectNumber = 404;
       const cardId = await projectAssigner.findProjectCardId(mOctokit, projectNumber, mockIssuesContext);
       expect(cardId).toBe(null)

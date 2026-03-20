@@ -3,8 +3,7 @@
 This repository contains GitHub Actions maintained by the Elastic Organization. Each action lives in
 its own top-level directory, such as `project-assigner/`.
 
-`project-assigner/` is the existing legacy action in this repository and remains self-contained.
-Additional actions can be added alongside it as new top-level directories.
+Actions can be added alongside `project-assigner/` as new top-level directories.
 
 ## Using Actions From This Repo
 
@@ -116,7 +115,7 @@ artifact:
 CI installs dependencies with `pnpm install --frozen-lockfile`, so changes that require lockfile
 updates must include an updated `pnpm-lock.yaml`.
 
-The build treats any **top-level directory** that contains an `action.yml` as an action and builds it with `@vercel/ncc`. `src/index.ts` is the required entrypoint.
+The build treats any **top-level directory** that contains an `action.yml` as an action and builds it with `@vercel/ncc`. `src/index.ts` is the standard entrypoint, with `project-assigner/index.js` kept as the one legacy exception while it shares the root-managed toolchain.
 
 ### Release tags and floating majors
 

@@ -4,14 +4,9 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
-export const ignoredDirs = new Set([
-  '.git',
-  '.github',
-  'coverage',
-  'node_modules',
-  'project-assigner',
-  'scripts',
-]);
+export const ignoredDirs = new Set(['.git', '.github', 'coverage', 'node_modules', 'scripts']);
+
+const legacyEntrypoints = new Map([['project-assigner', 'index.js']]);
 
 type BuildSpawn = (
   command: string,
@@ -37,6 +32,10 @@ export function getActionDirs(rootDir: string): string[] {
     .filter((actionDir) => existsSync(path.join(actionDir, 'action.yml')));
 }
 
+function getActionEntrypoint(actionDir: string): string {
+  return legacyEntrypoints.get(path.basename(actionDir)) ?? path.join('src', 'index.ts');
+}
+
 export function runBuildActions({
   rootDir,
   spawn = spawnSync,
@@ -58,11 +57,12 @@ export function runBuildActions({
   }
 
   for (const actionDir of actionDirs) {
-    const entryFile = path.join(actionDir, 'src', 'index.ts');
     const relativeActionDir = path.relative(rootDir, actionDir);
+    const entrypoint = getActionEntrypoint(actionDir);
+    const entryFile = path.join(actionDir, entrypoint);
 
     if (!existsSync(entryFile)) {
-      error(`${relativeActionDir} is missing src/index.ts.`);
+      error(`${relativeActionDir} is missing ${entrypoint}.`);
       return 1;
     }
 
@@ -70,17 +70,7 @@ export function runBuildActions({
 
     const result = spawn(
       process.execPath,
-      [
-        nccCliPath,
-        'build',
-        'src/index.ts',
-        '--out',
-        'dist',
-        '--license',
-        'licenses.txt',
-        '--target',
-        'es2022',
-      ],
+      [nccCliPath, 'build', entrypoint, '--out', 'dist', '--license', 'licenses.txt', '--target', 'es2022'],
       {
         cwd: actionDir,
         stdio: 'inherit',
